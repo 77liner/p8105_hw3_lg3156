@@ -137,10 +137,10 @@ activity_df %>%
     names_from = day,
     values_from = day_activity_counts
   )%>% 
-  knitr::kable()
+  knitr::kable(digits = 2)
 ```
 
-Actually, from this table, I cannot see any trends apparently.
+From this table, I can notice that on Saturday in last two week, the man had the least action. It seems like the man had less action on weekend than on weekdays. However, the counts of action is fluctuant among 5 weeks. Thus, I cannot find other trend apparently. 
 
 ### A plot showing the 24-hour activity
 
