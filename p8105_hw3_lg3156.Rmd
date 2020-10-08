@@ -8,6 +8,7 @@ output: github_document
 ```{r setup}
 library(tidyverse)
 library(p8105.datasets)
+library(readxl)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -86,3 +87,80 @@ instacart %>%
     values_from= mean_hour
   )
 ```
+
+# Problem 2
+
+### Load, tidy, and otherwise wrangle the data
+
+```{r}
+activity_df=
+  read_csv("./data/accel_data.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    activity_1:activity_1440,
+    names_to= "minute",
+    names_prefix = "activity_",
+    values_to ="counts") %>% 
+  mutate(
+    weekday_weekend = case_when(
+      day %in% c("Friday", "Monday", "Thursday", "Tuesday", "Wednesday") ~ "weekday",
+      day %in% c("Saturday", "Sunday") ~ "weekend",
+    )
+  ) %>% 
+  mutate(
+    week = as.factor(week),
+    day_id= as.numeric(day_id),
+    minute= as.numeric(minute),
+    weekday_weekend = as.factor(weekday_weekend),
+    day = as.factor(day),
+    counts = as.numeric(counts)
+  ) %>% 
+  mutate(
+     day = forcats::fct_relevel(day,"Monday","Tuesday","Wednesday","Thursday","Friday", "Saturday","Sunday")
+  ) %>% 
+  group_by(week) %>% 
+  arrange(day,.by_group = TRUE) %>% 
+  relocate (day_id, week, weekday_weekend)
+```
+
+This dataset includes variables --  day_id, week, weekday_weekend, day, minute, and counts. This dateset has `r ncol(activity_df) ` columns and contains `r nrow(activity_df)` observations. 
+
+### Traditional analyses of accelerometer data
+
+```{r}
+activity_df %>% 
+  group_by(week, day) %>% 
+  summarize(
+    day_activity_counts = sum (counts)
+  ) %>% 
+  pivot_wider(
+    names_from = day,
+    values_from = day_activity_counts
+  )%>% 
+  knitr::kable()
+```
+
+Actually, from this table, I cannot see any trends apparently.
+
+### A plot showing the 24-hour activity
+
+```{r}
+activity_df %>% 
+  mutate(
+    hour = (minute-1)%/%60+1
+  ) %>% 
+  group_by(day_id, week, day, hour) %>% 
+  summarize(
+    hour_activity_counts = sum (counts)
+  ) %>% 
+  ggplot( aes(x = hour, y = hour_activity_counts, color = day, group = day_id))+
+  geom_smooth(aes(linetype = week),se = FALSE)+
+  scale_y_continuous(trans ="sqrt",
+                     name = "Activity counts in an hour")+
+  scale_x_continuous(name = "Hour")+
+  labs(
+    title = "The 24-hour activity counts in 35 days",
+    caption = "Data from accelerometer data")
+```
+
+In most of the days, the 63 year-old man's main activity time is between 10 am and 8 pm. There is no significant different between weekday and weekend. 
