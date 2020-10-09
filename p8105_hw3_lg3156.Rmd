@@ -167,7 +167,7 @@ activity_df %>%
                                name = "Day of the week")
 ```
 
-In most of the days, the 63 year-old man's main activity time is between 10 am and 8 pm. There is no significant different between weekday and weekend. 
+In most of the days, the 63 year-old man's main activity time is between 10 am and 8 pm. The man has relative less action on Saturday. 
 
 # Problem 3
 
@@ -197,7 +197,7 @@ nynoaa_df =
 skimr::skim_without_charts(nynoaa_df)
 ```
 
-This dataset has `r nrow(nynoaa_df)` rows and `r ncol(nynoaa_df)` columns. It contains weather data for all NY states from 1981/01/01 to 2010/12/31. There are 9 valuables -- id, year, month, day, prcp, snow, snwd, tmax, and tmin. The type of "id" is character; the type of "year", "month", "day" are factor; the type of "prcp", "snow", "snwd", "tmax", and "tmin" are numeric and they all have missing data. The number of missing data of tmax and tmin are extremly high, so this is an issue. 
+This dataset has `r nrow(nynoaa_df)` rows and `r ncol(nynoaa_df)` columns. It contains weather data for all NY states from 1981/01/01 to 2010/12/31. There are 9 valuables -- id, year, month, day, prcp, snow, snwd, tmax, and tmin. The type of "id" is character; the type of "year", "month", "day" are factor; the type of "prcp", "snow", "snwd", "tmax", and "tmin" are numeric and they all have missing data. The proportion of missing data of snow (14.6%) and snwd(22.8%) are relative high. The proportion of missing data of tmax(43.7%) and tmin(43.7%) are extremly high.
 
 ### Snowfall
 
@@ -208,7 +208,7 @@ nynoaa_df %>%
   filter(rank == 1)
 ```
 
-The most commonly observed values is 0. Because in most of days, there isn't a snowfall.
+The most commonly observed values is 0. Because in most of days, there wasn't a snowfall.
 
 ### A plot showing the average max temperature
 ```{r}
@@ -224,7 +224,7 @@ january =
   theme(
     legend.position = 'none',
     plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
     axis.text.y = element_text(size = 8)
     ) +
   labs(
@@ -246,7 +246,7 @@ january =
   theme(
     legend.position = 'none',
     plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
     axis.text.y = element_text(size = 8)
     ) +
   labs(
@@ -298,7 +298,7 @@ temperature =
   theme(
     plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
     legend.position = 'right',
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
     axis.text.y = element_text(size = 8)
     ) +
   labs(
@@ -314,7 +314,7 @@ snowfall =
   geom_violin(color = "purple" , fill = "yellow") +
   theme(
     plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
     axis.text.y = element_text(size = 8)) +
   labs(
     x = "Year",
