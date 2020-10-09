@@ -15,7 +15,8 @@ library(ggridges)
 library(patchwork)
 
 knitr::opts_chunk$set(
-  fig.width = 6,
+  fig.height = 8,
+  fig.width = 8,
   fig.asp = .6,
   out.width = "90%"
 )
@@ -178,7 +179,7 @@ data("ny_noaa")
 ### Do some data cleaning
 
 ```{r}
-nynoaa_df=
+nynoaa_df =
   ny_noaa %>% 
   mutate_at(vars(date), as.factor) %>%
   separate(date, into = c("year", "month", "day")) %>% 
@@ -193,7 +194,10 @@ nynoaa_df=
   ) %>% 
   mutate_at(vars(year, month, day), as.factor)
 
+skimr::skim_without_charts(nynoaa_df)
 ```
+
+This dataset has `r nrow(nynoaa_df)` rows and `r ncol(nynoaa_df)` columns. It contains weather data for all NY states from 1981/01/01 to 2010/12/31. There are 9 valuables -- id, year, month, day, prcp, snow, snwd, tmax, and tmin. The type of "id" is character; the type of "year", "month", "day" are factor; the type of "prcp", "snow", "snwd", "tmax", and "tmin" are numeric and they all have missing data. The number of missing data of tmax and tmin are extremly high, so this is an issue. 
 
 ### Snowfall
 
@@ -215,15 +219,20 @@ january =
   summarise(tmax_mean = mean(tmax,na.rm = T)) %>% 
   drop_na() %>% 
   ggplot(aes(x = year, y = tmax_mean, color = id)) +
-  geom_point(alpha = 0.3) +
-  geom_path(aes(group = id), alpha = 0.3) +
-  theme(legend.position = 'none',
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_point(alpha = 0.3, size = 0.2) +
+  geom_path(aes(group = id), alpha = 0.3, size = 0.2) +
+  theme(
+    legend.position = 'none',
+    plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.y = element_text(size = 8)
+    ) +
   labs(
     x = "Year",
-    y = "The average max temperature in January",
-    title = "Max temperature in January in each station across years",
-    caption = "Data from NY NOAA")
+    y = "Temperature(C)",
+    title = "Max temperature in January in each station across years"
+    )
+    
 
  july =
   nynoaa_df %>% 
@@ -232,20 +241,24 @@ january =
   summarise(tmax_mean = mean(tmax,na.rm = T)) %>% 
   drop_na() %>% 
   ggplot(aes(x = year, y = tmax_mean, color = id)) +
-  geom_point(alpha = 0.3) +
-  geom_path(aes(group = id), alpha = 0.3) +
-  theme(legend.position = 'none',
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_point(alpha = 0.3, size = 0.2) +
+  geom_path(aes(group = id), alpha = 0.3, size = 0.2) +
+  theme(
+    legend.position = 'none',
+    plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.y = element_text(size = 8)
+    ) +
   labs(
     x = "Year",
-    y = "The average max temperature in July",
-    title = "Max temperature in July in each station across years",
-    caption = "Data from NY NOAA")
+    y = "Temperature(C)",
+    title = "Max temperature in July in each station across years"
+    )
  
  january/july
 ```
 
-In January, the max temperature fluctuate between -10C and 10C. In July the max temperature fluctuate between 20C and 33C. From this plot, we can see many outliers.
+In January, the max temperature fluctuate between -10C and 10C. In July the max temperature fluctuate between 20C and 33C. From this plot, we can see many outliers. From "Max temperature in January in each station across years" we can see 1994 and 2004 had relative low temperature and 1990, 1998, 2002 had relative high temperature in January. From "Max temperature in July in each station across years" we can see 1986, 1992, 2000, 2009 had relative low temperature and 1983, 1999, 2010 had relative high temperature in July.
 
 Outliers of max temperature in January in each station across years
 ```{r} 
@@ -280,26 +293,36 @@ temperature =
     names_to = "tmax_tmin",
     values_to = "temp"
   ) %>% 
-  ggplot(aes(x = id, y = temp)) +
-  geom_boxplot(aes(color = tmax_tmin)) +
-  theme(axis.text.x = element_text(angle = 135, vjust = 0.5, hjust = 1)) +
+  ggplot(aes(x = year, y = temp)) +
+  geom_boxplot(aes(color = tmax_tmin), alpha = 0.5, outlier.size = 0.2) +
+  theme(
+    plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
+    legend.position = 'right',
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.y = element_text(size = 8)
+    ) +
   labs(
-    x = "Station",
+    x = "Year",
     y = "Temperature (C)",
-    title = "Tmax vs Tmin for dacades in each station",
-    caption = "Data from NY NOAA")
+    title = "Tmax vs Tmin for years"
+    )
 
 snowfall = 
   nynoaa_df %>% 
   filter(snow > 0 & snow < 100) %>% 
   ggplot(aes(x = year, y = snow)) + 
   geom_violin(color = "purple" , fill = "yellow") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(
+    plot.title = element_text(lineheight = 3, face = "bold", color = "black", size = 8),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.y = element_text(size = 8)) +
   labs(
     x = "Year",
     y = "Snowfall (mm)",
-    title = "The snowfall values separately by year",
-    caption = "Data from NY NOAA")
+    title = "The snowfall values separately by year"
+    )
 
 temperature / snowfall
 ```
+
+From "Tmax vs Tmin for years", there seems to be no significant change of tmax or tmin for different years. There is approximately a difference of 12C between tmax and tmin in each year. From "The snowfall values separately by year", there seems to be no significant change of snowfall values for different years. The value of snowfall depth concentrates on 0-25mm, 50mm, and 75mm for each year.
