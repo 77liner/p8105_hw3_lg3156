@@ -152,14 +152,18 @@ From this table, I can notice that on Saturday in last two week, the man had the
 
 ```{r}
 activity_df %>% 
-  ggplot(aes(x = minute, y = counts, color = day)) +
-  geom_smooth(se = F) +
+  mutate(
+    hour = (minute - 1) %/% 60 + 1
+  ) %>% 
+  group_by(day_id, week, day, hour) %>% 
+  summarize(
+    hour_activity_counts = sum(counts)
+  ) %>% 
+  ggplot( aes(x = hour, y = hour_activity_counts, color = day, group = day_id)) +
+  geom_smooth(se = FALSE) + 
   scale_y_continuous(trans = "sqrt",
-                     name = "Activity counts in minutes") +
-  scale_x_continuous(name = "Hour",
-                     breaks = c(120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440), 
-                     labels = c("2h", "4h", "6h", "8h", "10h", "12h","14h", "16h", "18h","20h", "22h", "24h")
-                     ) +
+                     name = "Activity counts in hour") +
+  scale_x_continuous(name = "Hour") +
   labs(
     title = "The 24-hour activity counts in 35 days",
     caption = "Data from accelerometer data")+
